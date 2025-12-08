@@ -1,15 +1,15 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { Link } from 'expo-router';
 
  
 
 export default function HomeScreen() {
   return (
-    <ThemedView style={styles.titleContainer}>
-       <ThemedText type="title">Welcome!</ThemedText>
-    </ThemedView>
+    <View>
+       <Text type="title">Welcome!</Text>
+       <Link href="/settings"><Text>Go to Settings</Text></Link>
+    </View>
     // <ParallaxScrollView
     //   headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
     //   headerImage={
@@ -84,6 +84,7 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#FFFFF',
     gap: 8,
   },
   stepContainer: {
