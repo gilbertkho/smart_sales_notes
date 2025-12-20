@@ -1,9 +1,10 @@
-import ThemedButton from "@/components/button";
 import { ThemedView } from '@/components/themed-view';
 import styles from '@/config/style';
+import thousandSeparator from "@/config/thousandSeparator";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const CartScreen = () => {
 
@@ -49,18 +50,37 @@ const CartScreen = () => {
                 renderItem={({ item }) => (
                     <View style={cartStyles.cartItems}>
                         <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                            <Text style={styles.cartItemTitle}>{item.date}</Text>
-                            <ThemedButton text="X" textColor='white' color='#FF3B30' width={40} style={styles.button} onPress={() => {
-                                const newCart = cart.filter(cartItem => cartItem !== item);
-                                setCart(newCart);
-                            }} />
+                            <Text style={{...styles.cartItemTitle, fontWeight:'bold'}}>{item.date}</Text>
+                            <TouchableOpacity 
+                                style={{backgroundColor:'#e54f53', width: 40, height: 40, display: 'flex', alignItems:'center', justifyContent:'center', borderRadius: 5, borderWidth: 3, borderColor: '#e54f53'}} 
+                                onPress={() => {
+                                    const newCart = cart.filter(cartItem => cartItem !== item);
+                                    setCart(newCart);
+                                }}
+                            >
+                                <Ionicons name={'close-outline'} color={'white'} size={24}/>
+                            </TouchableOpacity>
                         </View>
-                        <Text style={styles.cartItemText}>{item.customer}</Text>
-                        <Text style={styles.cartItemText}>{item.address}</Text>
-                        <Text style={styles.cartItemText}>Total: {item.total}</Text>
+                        <Text style={{...styles.cartItemText, fontWeight: 'bold'}}>{item.customer}</Text>
+                        <Text style={{...styles.cartItemText}}>{item.address}</Text>
+                        <Text style={{...styles.cartItemText}}>Total: {thousandSeparator(item.total)}</Text>
                         <View style={{display: 'flex', flexDirection: 'row', gap: 10, marginTop: 5}}>
-                            <ThemedButton text="View" textColor='white' color='#007AFF' style={styles.button} onPress={() => {router.push('/cart/detail')}} />
-                            <ThemedButton text="Copy" textColor='white' color='#007AFF'  style={styles.button} onPress={() => {console.log('copy data: ', item)}} />
+                            <TouchableOpacity 
+                                style={{...styles.bgPrimary, flexGrow: 1, height: 40, display: 'flex', alignItems:'center', justifyContent:'center', borderRadius: 5}} 
+                                onPress={() => {
+                                    router.push('/cart/detail')
+                                }}
+                            >
+                                <Ionicons name={'eye-outline'} color={'white'} size={24}/>
+                            </TouchableOpacity>
+                            <TouchableOpacity 
+                                style={{...styles.bgSuccess, flexGrow: 1, height: 40, display: 'flex', alignItems:'center', justifyContent:'center', borderRadius: 5}} 
+                                onPress={() => {
+                                    console.log("DATA COPIED", item);
+                                }}
+                            >
+                                <Ionicons name={'copy-outline'} color={'white'} size={24}/>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 )}

@@ -17,6 +17,26 @@ const styles = StyleSheet.create({
         borderRadius:5,
         color: 'white'
     },
+    bgPrimary: { 
+        backgroundColor: '#20a8ec'
+    },
+    bgPrimaryBlue {
+        backgroundColor: '#234de4'
+    },
+    bgDanger: {
+        backgroundColor: '#e54f53'
+    },
+    bgSuccess: {
+        backgroundColor: '#96ca5d'
+    },
+    cartButton: {
+        width:30, 
+        height:30, 
+        borderRadius:100, 
+        display:'flex', 
+        alignItems:'center',  
+        justifyContent:'center',
+    },
     list: {
         minHeight: 200,
         borderRadius: 5,

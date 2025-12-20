@@ -4,10 +4,10 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import styles from "@/config/style";
 import thousandSeparator from "@/config/thousandSeparator";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useState } from "react";
-import { Button, Text, View } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
+import { useEffect, useState } from "react";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
 
 const CartDetail = () => {
   
@@ -16,11 +16,44 @@ const CartDetail = () => {
     customer: 'Customer A',
     address: 'Jl. Example No. 123',
     items: [
-        {id: 1, name: 'Barang A', satuan: 'Karton', quantity: 2, price: 10000},
-        {id: 2, name: 'Barang B', satuan: 'Pcs', quantity: 1, price: 60000}
+        {id: 1, kode: 'A001', name: 'Barang A', satuan: 'Karton', quantity: 2, price: 10000},
+        {id: 2, kode: 'A002', name: 'Barang B', satuan: 'Pcs', quantity: 1, price: 60000}
     ],
     total: 80000
   })
+
+  useEffect(() => {
+    countTotal();
+  },[cartDetail.items]);
+
+  const countTotal = () => {
+    let cartTotal = 0;
+    cartDetail.items.forEach((item) => {
+      cartTotal += item.quantity * item.price;
+    })
+
+    setCartDetail({...cartDetail, total: cartTotal});
+  }
+
+  const incQty = (item, index) => {
+    let items = [...cartDetail.items];
+    items[index].quantity++;
+    
+    setCartDetail({...cartDetail, items: items});
+  }
+
+  const dcrQty = (item, index) => {
+    let items = [...cartDetail.items];
+    if(items[index].quantity - 1 > 0){
+      items[index].quantity--;
+    }
+    else{
+      items.splice(index,1);
+      //add modal confirmation
+    }
+    console.log(items);
+    setCartDetail({...cartDetail, items: items});
+  }
 
   return (
     <View style={{overflow: 'scroll', height: '100%', backgroundColor: 'white'}}>
@@ -35,19 +68,27 @@ const CartDetail = () => {
             {cartDetail.date}
           </Text>
         </View>
+        {/* <Cart items={cartDetail.items} increaseFunction={(item) => incQty(item)} decreaseFunction = {(item) => dcrQty(item)} /> */}
         <FlatList
           style = {styles.list}
           data={cartDetail.items}
           keyExtractor={(item, key) => key.toString()}
-          renderItem={({ item }) => (
+          renderItem={({ item, index}) => (
             <ThemedView style={styles.listItem}>
                 <View>
                     <ThemedText type="default" style={{fontWeight: 'bold'}}>{item.name}</ThemedText>
                     <ThemedText type="default">{item.satuan}</ThemedText>
                 </View>
                 <ThemedText type="default">{thousandSeparator(item.price)}</ThemedText>
-                <Button title="-" onPress={() => addToCart(item)}></Button>
-                <Button title="+" onPress={() => addToCart(item)}></Button>
+                <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', width: 100}}>
+                  <TouchableOpacity style={{...styles.cartButton, ...styles.bgDanger}} onPress={() => dcrQty(item, index)}>
+                    <Ionicons name="remove-outline" size={20} color={'white'}/>
+                  </TouchableOpacity>
+                  <Text style={{fontWeight:'bold'}}>{item.quantity}</Text>
+                  <TouchableOpacity style={{...styles.cartButton, ...styles.bgPrimary}} onPress={() => incQty(item, index)}>
+                    <Ionicons name="add-outline" size={20} color={'white'}/>
+                  </TouchableOpacity>
+                </View>
             </ThemedView>
           )}
         />
