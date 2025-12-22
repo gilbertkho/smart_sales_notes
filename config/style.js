@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     bgPrimary: { 
         backgroundColor: '#20a8ec'
     },
-    bgPrimaryBlue {
+    bgPrimaryBlue: {
         backgroundColor: '#234de4'
     },
     bgDanger: {

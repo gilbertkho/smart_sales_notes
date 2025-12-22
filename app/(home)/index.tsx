@@ -136,12 +136,12 @@ const HomeScreen = () => {
     return (
         <View style={{display: 'flex', justifyContent: 'space-between', height: '100%', maxHeight: '100%'}}>
             <ThemedView style={{...styles.mainView, flexGrow: 1}}>
-            <TouchableOpacity style={{width:30, height:30, borderRadius:100, display:'flex', alignItems:'center',  justifyContent:'center', backgroundColor:'#20a8ec'}} onPress={() => addToCart(item)}>
-                <Ionicons name="add-outline" size={20} color={'white'}/>
+            <TouchableOpacity 
+                style={{...styles.bgPrimaryBlue, width:100, height:35, borderRadius:100, display:'flex', flexDirection:'row', gap: 5, alignItems:'center',  justifyContent:'center'}}
+                onPress={() => setLastUpdateTime(new Date().toDateString() + ' ' + new Date().toLocaleTimeString())}>
+                <Ionicons name="sync-outline" size={20} color={'white'}/>
+                <ThemedText style={{color:'white'}}>Sync</ThemedText>
             </TouchableOpacity>
-            <ThemedButton text="Sync" textColor='white' color='#007AFF' width={100} style={styles.button} onPress={() => {
-                setLastUpdateTime(new Date().toDateString() + ' ' + new Date().toLocaleTimeString());
-            }} />
             <ThemedText type="">Last Update: {lastUpdateTime}</ThemedText>
             {
                 barang.length > 0 ? 
