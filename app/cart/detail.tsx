@@ -2,15 +2,19 @@ import ThemedButton from "@/components/button";
 import PageHeader from "@/components/pageHeader";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import styles from "@/config/style";
+import { styles } from "@/config/style";
 import thousandSeparator from "@/config/thousandSeparator";
+import CartRepository from "@/src/database/cart_repository";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useSQLiteContext } from "expo-sqlite";
+import { useCallback, useEffect, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 
 const CartDetail = () => {
-  
+  const db = useSQLiteContext();
+  let params = useLocalSearchParams();
+  const [cartId, setCartId] = useState({});
   const [cartDetail, setCartDetail] = useState({
     date: '2024-01-01',
     customer: 'Customer A',
@@ -22,9 +26,29 @@ const CartDetail = () => {
     total: 80000
   })
 
+  useFocusEffect(
+    useCallback(() => {
+      console.log("INI CART DETAIL",params);
+      setCartId(params)
+    },[db, params.id])
+  );
+
+  useEffect(() => {
+    if(cartId.id){
+      console.log(cartId);
+      getCartFromDB(cartId);
+    }
+  },[cartId]);
+
   useEffect(() => {
     countTotal();
   },[cartDetail.items]);
+
+  const getCartFromDB = ({id}) => {
+    let cart = CartRepository.getCartById(db, id);
+    //console.log(cart);
+    setCartDetail(cart);
+  }
 
   const countTotal = () => {
     let cartTotal = 0;
@@ -61,7 +85,7 @@ const CartDetail = () => {
       <ThemedView style={{padding: 10, gap: 10, overflow: 'scroll', flexGrow: 1}}>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <View>
-            <Text style={{fontSize: 18, fontWeight: 'bold'}}>{cartDetail.customer}</Text>
+            <Text style={{fontSize: 18, fontWeight: 'bold'}}>{cartDetail.name  ? cartDetail.name :  cartDetail.customer_id}</Text>
             <Text style={{fontSize: 14}}>{cartDetail.address}</Text>
           </View>
           <Text style={{fontWeight: 'bold'}}>

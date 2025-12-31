@@ -1,7 +1,5 @@
-import { db } from './db_service';
-
-const CustomerRepository = {
-    saveCustomers: (customers) => {
+const CustomersRepository = {
+    saveCustomers: (db, customers) => {
         db.withTransactionSync(() => {
             customers.forEach((i) => {
                 db.runSync('INSERT OR REPLACE INTO customers (id, name, address) VALUES (?,?,?)',
@@ -10,13 +8,13 @@ const CustomerRepository = {
             });
         });
     },
-    getAllCustomers: () => {
+    getAllCustomers: (db) => {
         return db.getAllSync('SELECT * FROM customers');
     },
-    searchCustomers: (query) => {
-        return db.getAllSync('SELECT * FROM customers WHERE name LIKE ?', [`%${query}%`])
+    searchCustomers: (db, query) => {
+        return db.getAllSync('SELECT * FROM customers WHERE name LIKE ? COLLATE NOCASE', [`%${query}%`])
     }
 
 }
 
-export default CustomerRepository
+export default CustomersRepository

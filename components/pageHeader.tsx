@@ -16,8 +16,8 @@ const PageHeader: React.FC<Props> = ({ title = "", backButton = false, onBackPre
         </TouchableOpacity>
       )}
       <Text style={styles.title}>{title}</Text>
-      <TouchableOpacity style={{ visibility: 'hidden' }}>
-          <Ionicons name="arrow-back" size={24} color="black" />
+      <TouchableOpacity style={{ visibility: 'hidden', opacity: 0}}>
+          <Ionicons name="arrow-back" size={24} color="black" style={{visibility: 'hidden', opacity: 0}}/>
         </TouchableOpacity>
     </View>
   );
