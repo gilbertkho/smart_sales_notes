@@ -1,4 +1,5 @@
 import { ThemedView } from '@/components/themed-view';
+import MyEmptyListMessage from '@/components/ui/empty-list';
 import { styles, stylesModal } from '@/config/style';
 import thousandSeparator from "@/config/thousandSeparator";
 import CartRepository from '@/src/database/cart_repository';
@@ -128,6 +129,7 @@ const CartScreen = () => {
                 data={cartList}
                 keyExtractor={(item, key) => key.toString()}
                 style={{borderRadius: 5}}
+                ListEmptyComponent={MyEmptyListMessage}
                 renderItem={({item}) => (
                     <View style={cartStyles.cartItems}>
                         <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>

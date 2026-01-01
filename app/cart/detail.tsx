@@ -2,6 +2,7 @@ import ThemedButton from "@/components/button";
 import PageHeader from "@/components/pageHeader";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import MyEmptyListMessage from "@/components/ui/empty-list";
 import { styles } from "@/config/style";
 import thousandSeparator from "@/config/thousandSeparator";
 import CartRepository from "@/src/database/cart_repository";
@@ -97,6 +98,7 @@ const CartDetail = () => {
           style = {styles.list}
           data={cartDetail.items}
           keyExtractor={(item, key) => key.toString()}
+          ListEmptyComponent={MyEmptyListMessage}
           renderItem={({ item, index}) => (
             <ThemedView style={styles.listItem}>
                 <View>

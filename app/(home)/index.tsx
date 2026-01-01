@@ -1,6 +1,7 @@
 import ThemedButton from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import MyEmptyListMessage from "@/components/ui/empty-list";
 import { styles, stylesModal } from '@/config/style';
 import thousandSeparator from "@/config/thousandSeparator";
 import CartRepository from "@/src/database/cart_repository";
@@ -363,8 +364,7 @@ const HomeScreen = () => {
                     <ThemedText style={{color:'white'}}>Sync</ThemedText>
                 </TouchableOpacity>
                 <Text>Last Update: {lastUpdateTime}</Text>
-                {
-                    barang.length > 0 ? 
+                
                     <ThemedView style={{backgroundColor:'', gap: 10, flex: 1}}>
                         <ThemedView style={{backgroundColor:'', gap:10, flex: 1}}>
                             <View style={{flexDirection:'row', gap: 3, margin:0}}>
@@ -388,6 +388,7 @@ const HomeScreen = () => {
                                     data={searchResultBarang.length > 0 ? searchResultBarang : barang}
                                     keyExtractor={(item,key) => key.toString()}
                                     nestedScrollEnabled={true}
+                                    ListEmptyComponent={MyEmptyListMessage}
                                     renderItem={({item, index}) => (
                                         <ThemedView style={{...styles.listItem}}>
                                             <View style={{width: '10%'}}>
@@ -433,6 +434,7 @@ const HomeScreen = () => {
                                         data = {searchResultCustomer}
                                         keyExtractor={(item,key) => key.toString()}
                                         nestedScrollEnabled={true}
+                                        ListEmptyComponent={MyEmptyListMessage}
                                         renderItem={({item}) => (
                                             <ThemedView 
                                                 style={{flexDirection:'column', justifyContent:'space-between', borderBottomWidth: 1, borderBottomColor: 'gray', width:'95%'}}
@@ -451,6 +453,7 @@ const HomeScreen = () => {
                                 style = {styles.listCart}
                                 data={cartDetail.items}
                                 keyExtractor={(item, key) => key.toString()}
+                                ListEmptyComponent={MyEmptyListMessage}
                                 renderItem={({ item, index}) => (
                                     <ThemedView style={{...styles.listItem}}>
                                         <View style={{width: '10%'}}>
@@ -475,8 +478,7 @@ const HomeScreen = () => {
                             />
                         </ThemedView>
                     </ThemedView>
-                    : null
-                }
+                 
             </ThemedView>
             <View style={COStyles.checkOutContainer}>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
