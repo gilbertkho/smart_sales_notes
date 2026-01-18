@@ -27,12 +27,30 @@ const CartRepository = {
             console.error("Transaction Failed. No data was saved:", error);
         }
     },
+    markCartAsSent: (db, id) => {
+        try{
+            console.log("Marking cart as sent:", id);
+            return db.runSync('UPDATE cart SET is_sent = 1 WHERE id = ?',[id]);
+        }
+        catch(error){
+            console.error("Failed to update cart sent status", error);
+        }
+    },
     getAllCart: (db) => {
-        return db.getAllSync(
-            `SELECT c.*, cs.name, cs.address FROM cart c LEFT JOIN customers cs ON c.customer_id = cs.id`);
+        try{
+            return db.getAllSync(
+                `SELECT c.*, cs.name, cs.address FROM cart c LEFT JOIN customers cs ON c.customer_id = cs.id`);
+        }
+        catch(error){
+            console.log('Failed to get all cart', error);
+        }
     },
     getAllCartDetail: (db) => {
-        return db.getAllSync('SELECT cd.*, i.* FROM cart_detail cd, items i WHERE cd.item_id = i.id');
+        try{
+            return db.getAllSync('SELECT cd.*, i.* FROM cart_detail cd, items i WHERE cd.item_id = i.id');
+        }catch(error){
+            console.log('Failed to get all cart detail', error);
+        }
     },
     getCartById: (db, id) => {
         try{

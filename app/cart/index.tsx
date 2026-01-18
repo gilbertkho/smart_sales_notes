@@ -3,11 +3,15 @@ import MyEmptyListMessage from '@/components/ui/empty-list';
 import { styles, stylesModal } from '@/config/style';
 import thousandSeparator from "@/config/thousandSeparator";
 import CartRepository from '@/src/database/cart_repository';
+import SettingsRepository from '@/src/database/settings_repository';
 import { Ionicons } from "@expo/vector-icons";
+import axios from 'axios';
+import * as Clipboard from 'expo-clipboard';
 import { router, useFocusEffect } from "expo-router";
 import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useEffect, useState } from 'react';
 import { FlatList, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-root-toast';
 
 const cart = [{
     date: '2024-01-01',
@@ -41,7 +45,8 @@ const cart = [{
 }]
 
 const CartScreen = () => {
-    const db = useSQLiteContext();
+    const [baseUrl, setBaseUrl] = useState('');
+    let db = useSQLiteContext();
     const [cartList, setCartList] = useState([]);
     const [openDeleteCart, setOpenDeleteCart] = useState(false);
     const [selectedCart, setSelectedCart] = useState({});
@@ -49,6 +54,15 @@ const CartScreen = () => {
     useFocusEffect(
         useCallback(() => {
             getCartFromDB();
+            let baseUrlFromDB = SettingsRepository.getAllSettings(db);
+            console.log("BASE URL SETTINGS", baseUrl);
+            if(baseUrlFromDB.length > 0){
+                baseUrlFromDB = baseUrlFromDB.filter((setting) => {
+                    return setting.settings_name == "base_url" && setting.val != '';
+                })
+                setBaseUrl(baseUrlFromDB[0].val);
+            }
+            console.log("BASE URL SETTINGS", baseUrl);
         },[db])
     );
 
@@ -70,6 +84,7 @@ const CartScreen = () => {
                     name: cart_header[i].name ?? cart_header[i].customer_id, //customer_name
                     address: cart_header[i].address, //customer_address
                     total: cart_header[i].total,
+                    is_sent: cart_header[i].is_sent,
                     items: cart_items,
                 })
             };
@@ -90,6 +105,44 @@ const CartScreen = () => {
     useEffect(() => {
         console.log('SELECTED CART', selectedCart);
     },[selectedCart])
+
+
+    const copyToClipboard = async (text) => {
+        console.log(text);
+        Clipboard.setStringAsync(text);
+        Toast.show('Cart data copied!', {
+            duration: Toast.durations.LONG,
+            position: Toast.positions.TOP,
+            backgroundColor: '#2ecc71',
+            opacity: 0.9,
+        });
+    }
+
+    const sendToPOS = async (cart) => {
+        console.log("BASE URL", baseUrl);
+        try{
+            let responseBarang = await axios.post(`http://${baseUrl}/pos-agape/smart/sync`, cart);
+            console.log(responseBarang);
+            //update is_sent status
+            CartRepository.markCartAsSent(db, cart.id);
+            getCartFromDB();
+            Toast.show('Cart Successfully Sent!', {
+                duration: Toast.durations.LONG,
+                position: Toast.positions.TOP,
+                backgroundColor: '#2ecc71',
+                opacity: 0.9,
+            });
+        }
+        catch(error){
+            console.log(error);
+            Toast.show('Cart failed to sent! Please check your connection', {
+                duration: Toast.durations.LONG,
+                position: Toast.positions.TOP,
+                backgroundColor: '#e54f53',
+                opacity: 0.9,
+            });
+        }   
+    }
 
     return (
         <ThemedView style={styles.mainView}>
@@ -165,9 +218,18 @@ const CartScreen = () => {
                                 style={{...styles.bgSuccess, flexGrow: 1, height: 40, display: 'flex', alignItems:'center', justifyContent:'center', borderRadius: 5}} 
                                 onPress={() => {
                                     console.log("DATA COPIED", item);
+                                    copyToClipboard(JSON.stringify(item));
                                 }}
                             >
                                 <Ionicons name={'copy-outline'} color={'white'} size={24}/>
+                            </TouchableOpacity>
+                            <TouchableOpacity 
+                                style={[item.is_sent === 0? styles.bgSuccess : styles.bgPrimary, {flexGrow: 1, height: 40, display: 'flex', alignItems:'center', justifyContent:'center', borderRadius: 5}]} 
+                                onPress={() => {
+                                    sendToPOS(item);
+                                }}
+                            >
+                                <Ionicons name={'send-outline'} color={'white'} size={24}/>
                             </TouchableOpacity>
                         </View>
                     </View>

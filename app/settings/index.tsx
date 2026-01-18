@@ -1,14 +1,15 @@
 
 import ThemedButton from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { styles, stylesModal } from "@/config/style";
 import { factoryReset } from "@/src/database/db_service";
 import SettingsRepository from '@/src/database/settings_repository';
 import { useFocusEffect } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useState } from "react";
-import { Modal, Pressable, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { KeyboardAvoidingView, Modal, Pressable, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import Toast from "react-native-root-toast";
 
 const SettingsScreen = () => {
     const db = useSQLiteContext();
@@ -33,7 +34,18 @@ const SettingsScreen = () => {
     );
 
     const saveSettings = () => {
-        SettingsRepository.saveSettings(db, settings);
+        try{
+            SettingsRepository.saveSettings(db, settings);
+            Toast.show('Settings saved!', {
+                duration: Toast.durations.SHORT,
+                position: Toast.positions.TOP,
+                backgroundColor: '#2ecc71',
+                opacity: 0.9,
+            });
+        }
+        catch(e){
+            console.log(e);
+        }
     }
 
     const handleReset = () => {
@@ -42,8 +54,8 @@ const SettingsScreen = () => {
     }
 
     return(
-        <ThemedView style={styles.mainView}>
-           <Modal
+        <KeyboardAvoidingView style={{position:'relative', backgroundColor:'', display:'flex', flex: 1, width: '100%'}} behavior="padding">
+            <Modal
                 animationType="slide"
                 transparent={true}
                 visible={openModal}
@@ -74,32 +86,38 @@ const SettingsScreen = () => {
                     </View>
                 </View>
             </Modal>
-            <View style={{flexGrow: 1, justifyContent:'center', gap: 10}}>
-                <View>
-                    <ThemedText>Base URL:</ThemedText>
-                    <TextInput
-                        style={styles.textInput}
-                        placeholder="Enter Base URL"
-                        value={settings.base_url}
-                        onChangeText={(text) => setSettings({...settings, base_url: text})}
-                    />
+            <ScrollView style={{padding: 10}}>
+                <View style={{flex: 1}}>
+                    <View style={{display: 'flex', gap: 10}}>
+                        <View>
+                            <ThemedText>Base URL:</ThemedText>
+                            <TextInput
+                                style={styles.textInput}
+                                placeholder="Enter Base URL"
+                                value={settings.base_url}
+                                onChangeText={(text) => setSettings({...settings, base_url: text})}
+                            />
+                        </View>
+                        <TouchableOpacity
+                            style={{...styles.bgDanger, height: 40, borderRadius: 5, display:'flex', alignItems: 'center', justifyContent: 'center'}}
+                            onPress={() => setOpenModal(true)}
+                        >
+                            <Text style={{textAlign: 'center', color: 'white'}}>Factory Reset</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-                <TouchableOpacity
-                    style={{...styles.bgDanger, height: 40, borderRadius: 5, display:'fex', alignItems: 'center', justifyContent: 'center'}}
-                    onPress={() => setOpenModal(true)}
-                >
-                    <Text style={{textAlign: 'center', color: 'white'}}>Factory Reset</Text>
-                </TouchableOpacity>
+            </ScrollView>
+            <View style={{position: 'absolute' ,bottom: 0, padding: 10, width: '100%'}}>
+                <ThemedButton 
+                    text="Save Settings" 
+                    textColor='white' 
+                    color='#007AFF' 
+                    width='100%' 
+                    style={styles.button} 
+                    onPress={() => saveSettings()} 
+                />
             </View>
-            <ThemedButton 
-                text="Save Settings" 
-                textColor='white' 
-                color='#007AFF' 
-                width='100%' 
-                style={styles.button} 
-                onPress={() => saveSettings()} 
-            />
-        </ThemedView>
+        </KeyboardAvoidingView>
     )
 
 }

@@ -21,14 +21,17 @@ export const initDatabase = (db) => {
                 id INTEGER PRIMARY KEY AUTOINCREMENT, 
                 date TEXT, 
                 customer_id TEXT,
-                total REAL
+                total REAL,
+                is_sent INTEGER DEFAULT 0
             );
     
             CREATE TABLE IF NOT EXISTS cart_detail (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 cart_id INTEGER,
                 item_id INTEGER, 
-                quantity INTEGER
+                quantity INTEGER,
+                FOREIGN KEY (cart_id) REFERENCES cart(id),
+                FOREIGN KEY (item_id) REFERENCES items(id)
             );
 
             CREATE TABLE IF NOT EXISTS settings (
